@@ -11,5 +11,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Run CI
-        uses: ./.github/actions/ci
+      - name: Check Formatting
+        uses: ./.github/actions/format
+      - name: Unit Tests
+        uses: ./.github/actions/unit-tests
+      - name: Integration Tests
+        uses: ./.github/actions/integration-tests
