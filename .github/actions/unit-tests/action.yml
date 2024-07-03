@@ -5,5 +5,5 @@ runs:
   steps:
     - name: Hello World
       shell: bash
-      #run: echo "Hello, World!"
-      run: exit 1
+      run: echo "Hello, World!"
+      # run: exit 1
