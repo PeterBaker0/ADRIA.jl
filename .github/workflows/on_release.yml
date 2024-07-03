@@ -1,0 +1,25 @@
+name: On Release
+
+on:
+  release:
+jobs:
+  ci:
+    permissions:
+      # should only need read?
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run CI
+        uses: ./.github/actions/ci
+  cd:
+    permissions:
+      # should only need read?
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run CD
+        uses: ./.github/actions/cd

@@ -1,0 +1,9 @@
+name: "CD Action"
+description: "Composition of various CD steps used to deploy after release."
+runs:
+  using: composite
+  steps:
+    - name: Docker Publish
+      uses: ./.github/actions/docker-publish
+    - name: ADRIA Model Update (Provena)
+      uses: ./.github/actions/update-adria-model-provena
