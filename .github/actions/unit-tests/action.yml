@@ -1,9 +1,35 @@
-name: "Unit Tests"
-description: "TODO - dummy action"
+name: "Julia Tests"
+description: "Testing for Julia including integration and unit"
+inputs:
+  arch:
+    description: The architecture to run unit tests on e.g. x64
+    required: false
+    default: x64
+  julia_version:
+    description: Julia version to run CI with
+    required: true
 runs:
-  using: "composite"
+  using: composite
   steps:
-    - name: Hello World
-      shell: bash
-      run: echo "Hello, World!"
-      # run: exit 1
+    - name: checkout
+      uses: actions/checkout@v4
+    - uses: julia-actions/setup-julia@v2
+      with:
+        version: ${{ inputs.julia_version }}
+        arch: ${{ inputs.arch }}
+    - uses: actions/cache@v2
+      env:
+        cache-name: cache-artifacts
+      with:
+        path: ~/.julia/artifacts
+        key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-test-${{ env.cache-name }}-
+          ${{ runner.os }}-test-
+          ${{ runner.os }}-
+    - uses: julia-actions/julia-buildpkg@v1
+    - uses: julia-actions/julia-runtest@v1
+    - uses: julia-actions/julia-processcoverage@v1
+    - uses: codecov/codecov-action@v2
+      with:
+        file: lcov.info

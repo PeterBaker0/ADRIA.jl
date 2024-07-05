@@ -1,8 +1,0 @@
-name: "Format Action"
-description: "TODO - dummy action"
-runs:
-  using: "composite"
-  steps:
-    - name: Hello World
-      shell: bash
-      run: echo "Hello, World!"

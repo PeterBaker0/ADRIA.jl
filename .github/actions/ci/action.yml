@@ -1,11 +1,43 @@
 name: "CI Action"
 description: "Composition of various CI steps used to ensure code is ready for merge."
+inputs:
+  arch:
+    description: The architecture to run unit tests on e.g. x64
+    required: false
+    default: x64
+  julia_version:
+    description: Julia version to run CI with
+    required: true
 runs:
   using: composite
   steps:
-    - name: Check Formatting
-      uses: ./.github/actions/format
+    - name: checkout
+      uses: actions/checkout@v4
+    - uses: julia-actions/julia-format@v3
+      with:
+        version: "1" # Set `version` to '1.0.54' if you need to use JuliaFormatter.jl v1.0.54 (default: '1')
+        suggestion-label: "format-suggest" # leave this unset or empty to show suggestions for all PRs
     - name: Unit Tests
       uses: ./.github/actions/unit-tests
     - name: Integration Tests
       uses: ./.github/actions/integration-tests
+    - uses: julia-actions/setup-julia@v2
+      with:
+        version: ${{ inputs.julia_version }}
+        arch: ${{ inputs.arch }}
+    - uses: actions/cache@v2
+      env:
+        cache-name: cache-artifacts
+      with:
+        path: ~/.julia/artifacts
+        key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-test-${{ env.cache-name }}-
+          ${{ runner.os }}-test-
+          ${{ runner.os }}-
+    - uses: julia-actions/julia-buildpkg@v1
+    - uses: julia-actions/julia-runtest@v1
+    - uses: julia-actions/julia-processcoverage@v1
+    - uses: codecov/codecov-action@v2
+      with:
+        file: lcov.info
